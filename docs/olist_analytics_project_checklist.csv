@@ -1,0 +1,32 @@
+Task,Category,Layer,Status,Priority,Tooling,Deliverable,Depends On,Notes
+Initialize repository,Project Setup,N/A,Done,High,"Git,GitHub,VS Code",TRUE,,Create repo and base folders
+Write Business Requirements Document,Documentation,N/A,Done,High,"Notion,Markdown",TRUE,Initialize repository,Defines scope and goals
+Create Data Dictionary,Documentation,N/A,In Progress,Medium,"Notion",TRUE,Write Business Requirements Document,Gold layer focused
+Define Git branching strategy,Project Setup,N/A,Not Started,Medium,"Git,GitHub",FALSE,Initialize repository,Main + feature branches
+Set up development environment,Project Setup,N/A,Not Started,Medium,"VS Code,Python",FALSE,Initialize repository,Extensions and tooling
+Download Olist CSV datasets,Data Ingestion,Bronze,Not Started,High,"Python,CSV",FALSE,Initialize repository,Immutable raw data
+Fetch FX rates from Frankfurter API,Currency Normalization,Bronze,Not Started,High,"Python,API",FALSE,Initialize repository,BRL to USD rates
+Create Bronze views,Data Transformation,Bronze,Not Started,High,"DuckDB,SQL",FALSE,Download Olist CSV datasets,Schema-on-read
+Register FX rates as Bronze view,Currency Normalization,Bronze,Not Started,High,"DuckDB,SQL",FALSE,Fetch FX rates from Frankfurter API,Daily FX data
+Clean customers,Data Transformation,Silver,Not Started,High,"DuckDB,SQL",FALSE,Create Bronze views,Deduplication and standardization
+Clean orders,Data Transformation,Silver,Not Started,High,"DuckDB,SQL",FALSE,Create Bronze views,Timestamp validation
+Clean payments,Data Transformation,Silver,Not Started,High,"DuckDB,SQL",FALSE,Create Bronze views,Positive values only
+Clean products,Data Transformation,Silver,Not Started,Medium,"DuckDB,SQL",FALSE,Create Bronze views,Category cleanup
+Validate Silver uniqueness,Data Quality,Silver,Not Started,High,"Python",FALSE,Clean customers,Primary key checks
+Validate Silver referential integrity,Data Quality,Silver,Not Started,High,"Python",FALSE,Clean orders,FK integrity
+Build dim_customers,Data Modeling,Gold,Not Started,High,"DuckDB,SQL",TRUE,Clean customers,Star schema dimension
+Build dim_products,Data Modeling,Gold,Not Started,Medium,"DuckDB,SQL",TRUE,Clean products,Star schema dimension
+Build dim_date,Data Modeling,Gold,Not Started,High,"DuckDB,SQL",TRUE,Clean orders,Calendar attributes
+Build dim_exchange_rate,Data Modeling,Gold,Not Started,High,"DuckDB,SQL",TRUE,Register FX rates as Bronze view,FX dimension
+Build fact_orders,Data Modeling,Gold,Not Started,High,"DuckDB,SQL",TRUE,"Clean orders; Clean payments",Order grain
+Apply FX normalization to revenue,Currency Normalization,Gold,Not Started,High,"DuckDB,SQL",TRUE,"Build fact_orders; Build dim_exchange_rate",USD revenue
+Validate Gold KPIs,Data Quality,Gold,Not Started,High,"Python",FALSE,Build fact_orders,Revenue reconciliation
+Export Gold views to Parquet,BI & Analytics,Gold,Not Started,Medium,"Python,Parquet",TRUE,Validate Gold KPIs,Power BI ready
+Build Power BI revenue dashboard,BI & Analytics,Gold,Not Started,Medium,"Power BI",TRUE,Export Gold views to Parquet,Executive KPIs
+Build Power BI customer dashboard,BI & Analytics,Gold,Not Started,Medium,"Power BI",TRUE,Export Gold views to Parquet,Retention analysis
+Write README documentation,Documentation,N/A,Not Started,High,"Markdown",TRUE,Build Power BI revenue dashboard,Portfolio entry
+Write architecture documentation,Documentation,N/A,Not Started,Medium,"Markdown",TRUE,Write README documentation,System overview
+Implement Python orchestration,Automation,All,Not Started,High,"Python",TRUE,"Create Bronze views; Clean customers",Pipeline control
+Create GitHub Actions workflow,Automation,All,Not Started,High,"GitHub Actions",TRUE,Implement Python orchestration,CI/CD
+Fail pipeline on data quality issues,Automation,All,Not Started,High,"GitHub Actions,Python",FALSE,Validate Gold KPIs,Governance
+Final review and optimization,Review & Optimization,N/A,Not Started,Medium,"SQL,Python",TRUE,Create GitHub Actions workflow,Portfolio polish
